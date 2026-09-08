@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridApex - Közösségi Blog</title>
+    <style>
+        :root {
+            --bg-color: #06080e;
+            --card-bg: #101420;
+            --red-accent: #ff0055;
+            --green-accent: #00ff66;
+            --blue-accent: #00bfff;
+            --text-color: #ffffff;
+            --subtext-color: #8b9bb4;
+            --border-color: #1e2638;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+        .brand-title span { color: var(--red-accent); }
+
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+        .btn-back:hover { border-color: var(--green-accent); color: var(--green-accent); }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--subtext-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--subtext-color);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            background: #06080e;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .form-control:focus { border-color: var(--green-accent); }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: var(--green-accent);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .posts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .post-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--blue-accent);
+            border-radius: 8px;
+            padding: 18px;
+            position: relative;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .post-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        .post-author-info {
+            flex: 1;
+        }
+
+        .post-author-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .post-meta {
+            font-size: 0.75rem;
+            color: var(--subtext-color);
+        }
+
+        .badge-rank {
+            background: rgba(0, 191, 255, 0.15);
+            color: var(--blue-accent);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .post-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .post-content {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #d1d5db;
+            white-space: pre-wrap;
+        }
+
+        .btn-delete {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 0, 85, 0.15);
+            color: var(--red-accent);
+            border: 1px solid var(--red-accent);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: var(--red-accent);
+            color: #fff;
+        }
+
+        .status-msg {
+            font-size: 0.8rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .status-error { color: var(--red-accent); }
+        .status-success { color: var(--green-accent); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Fejléc -->
+        <div class="top-bar">
+            <div class="brand-title">GRID<span>APEX</span> BLOG</div>
+            <a href="dashboard.html" class="btn-back">← Vissza a Dashboardra</a>
+        </div>
+
+        <!-- Új Poszt Létrehozása -->
+        <div class="card">
+            <div class="card-title">Új Bejegyzés Írása</div>
+            
+            <div class="form-group">
+                <label>Bejegyzés Címe</label>
+                <input type="text" id="post-title-input" class="form-control" placeholder="pl. Hétvégi futam elemzés">
+            </div>
+
+            <div class="form-group">
+                <label>Tartalom</label>
+                <textarea id="post-content-input" class="form-control" placeholder="Írd le a gondolataidat..."></textarea>
+            </div>
+
+            <button class="btn-submit" id="btn-publish">Közzététel</button>
+            <div class="status-msg" id="status-msg"></div>
+        </div>
+
+        <!-- Bejegyzések Lista -->
+        <div class="card-title">Legutóbbi Bejegyzések</div>
+        <div class="posts-container" id="posts-list">
+            <div style="text-align: center; color: var(--subtext-color);">Bejegyzések betöltése...</div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modulok -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDoc, 
+            getDocs, 
+            deleteDoc, 
+            doc, 
+            query, 
+            orderBy 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCX343Oi-c6JKJ0HVdhZihaNxtpiXdB5Sk",
+            authDomain: "gridapexoffical.firebaseapp.com",
+            projectId: "gridapexoffical",
+            storageBucket: "gridapexoffical.firebasestorage.app",
+            messagingSenderId: "932186345951",
+            appId: "1:932186345951:web:e8d6d78ad6f275935bf46a",
+            measurementId: "G-B318MBBYFM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let currentUserData = null;
+
+        const statusMsg = document.getElementById('status-msg');
+
+        function showStatus(text, isError = false) {
+            statusMsg.innerText = text;
+            statusMsg.className = "status-msg " + (isError ? "status-error" : "status-success");
+        }
+
+        // Munkamenet és adatok betöltése
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const userDocSnap = await getDoc(doc(db, "users", user.uid));
+                
+                if (userDocSnap.exists()) {
+                    currentUserData = userDocSnap.data();
+                } else {
+                    currentUserData = {
+                        fullName: user.displayName || "Ismeretlen",
+                        username: user.email.split('@')[0],
+                        rank: "Kezdő Pilóta"
+                    };
+                }
+
+                loadPosts();
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Poszt közzététele
+        document.getElementById('btn-publish').addEventListener('click', async () => {
+            const title = document.getElementById('post-title-input').value.trim();
+            const content = document.getElementById('post-content-input').value.trim();
+
+            if (!title || !content) {
+                showStatus("A cím és a tartalom kitöltése is kötelező!", true);
+                return;
+            }
+
+            try {
+                showStatus("Bejegyzés közzététele...");
+                
+                await addDoc(collection(db, "posts"), {
+                    title: title,
+                    content: content,
+                    authorUid: currentUser.uid,
+                    authorName: currentUserData.fullName || "Ismeretlen Pilóta",
+                    authorUsername: currentUserData.username || "anonim",
+                    authorRank: currentUserData.rank || "Kezdő Pilóta",
+                    authorPhoto: currentUserData.photoURL || "https://via.placeholder.com/150/101420/ffffff?text=GRID",
+                    createdAt: new Date().toISOString()
+                });
+
+                document.getElementById('post-title-input').value = "";
+                document.getElementById('post-content-input').value = "";
+                
+                showStatus("Bejegyzés sikeresen közzétéve!");
+                loadPosts();
+            } catch (err) {
+                showStatus("Hiba a közzététel során: " + err.message, true);
+            }
+        });
+
+        // Posztok betöltése
+        async function loadPosts() {
+            const postsList = document.getElementById('posts-list');
+            
+            try {
+                const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+
+                postsList.innerHTML = "";
+
+                if (querySnapshot.empty) {
+                    postsList.innerHTML = `<div style="text-align: center; color: var(--subtext-color);">Még nincsenek bejegyzések. Írd meg az elsőt!</div>`;
+                    return;
+                }
+
+                querySnapshot.forEach((postDoc) => {
+                    const post = postDoc.data();
+                    const postId = postDoc.id;
+
+                    // Ellenőrizzük, hogy a jelenlegi felhasználó Admin-e vagy sgerozje, illetve saját posztja-e
+                    const isAdmin = currentUserData?.rank === "Admin";
+                    const isSgerozje = currentUserData?.username === "sgerozje";
+                    const isAuthor = post.authorUid === currentUser.uid;
+
+                    const canDelete = isAdmin || isSgerozje || isAuthor;
+
+                    const dateStr = new Date(post.createdAt).toLocaleString('hu-HU');
+
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post-card';
+                    postElement.innerHTML = `
+                        ${canDelete ? `<button class="btn-delete" data-id="${postId}">Törlés</button>` : ''}
+                        <div class="post-header">
+                            <img class="post-avatar" src="${post.authorPhoto}" alt="Avatar">
+                            <div class="post-author-info">
+                                <div class="post-author-name">
+                                    ${post.authorName} (@${post.authorUsername})
+                                    <span class="badge-rank">${post.authorRank}</span>
+                                </div>
+                                <div class="post-meta">${dateStr}</div>
+                            </div>
+                        </div>
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-content">${post.content}</div>
+                    `;
+
+                    postsList.appendChild(postElement);
+                });
+
+                // Törlés gombok eseménykezelői
+                document.querySelectorAll('.btn-delete').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        if (confirm("Biztosan törölni szeretnéd ezt a bejegyzést?")) {
+                            try {
+                                await deleteDoc(doc(db, "posts", id));
+                                loadPosts();
+                            } catch (err) {
+                                alert("Hiba a törléskor: " + err.message);
+                            }
+                        }
+                    });
+                });
+
+            } catch (err) {
+                postsList.innerHTML = `<div style="text-align: center; color: var(--red-accent);">Hiba a posztok betöltésekor: ${err.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
