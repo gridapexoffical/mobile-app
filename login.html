@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridApex - Bejelentkezés</title>
+    <style>
+        :root {
+            --bg-color: #06080e;
+            --card-bg: #101420;
+            --red-accent: #ff0055;
+            --green-accent: #00ff66;
+            --text-color: #ffffff;
+            --subtext-color: #8b9bb4;
+            --border-color: #1e2638;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--red-accent);
+            border-radius: 12px;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .brand-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .brand-title span { color: var(--red-accent); }
+
+        .brand-subtitle {
+            font-size: 0.8rem;
+            color: var(--subtext-color);
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        /* Form elemek */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--subtext-color);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            background: #06080e;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--green-accent);
+        }
+
+        /* Gombok */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--red-accent);
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-register {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--subtext-color);
+            margin-top: 10px;
+        }
+
+        /* Elválasztó vonal */
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--subtext-color);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 10px;
+        }
+
+        /* Google Gomb */
+        .btn-google {
+            background: #ffffff;
+            color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        /* Hiba / Státusz üzenetek */
+        .status-msg {
+            font-size: 0.8rem;
+            margin-top: 15px;
+            text-align: center;
+            min-height: 20px;
+        }
+        .status-error { color: var(--red-accent); }
+        .status-success { color: var(--green-accent); }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="brand-header">
+            <div class="brand-title">GRID<span>APEX</span></div>
+            <div class="brand-subtitle">Telemetria & Csapat Portál</div>
+        </div>
+
+        <!-- Email & Jelszó Bejelentkezés -->
+        <div class="form-group">
+            <label>Email cím</label>
+            <input type="email" id="email" class="form-control" placeholder="pilota@gridapex.com">
+        </div>
+
+        <div class="form-group">
+            <label>Jelszó</label>
+            <input type="password" id="password" class="form-control" placeholder="••••••••">
+        </div>
+
+        <button class="btn btn-primary" id="btn-login">Belépés</button>
+        <button class="btn btn-register" id="btn-register">Regisztráció</button>
+
+        <div class="divider"><span>vagy</span></div>
+
+        <!-- Google Bejelentkezés -->
+        <button class="btn btn-google" id="btn-google">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            Belépés Google-fiókkal
+        </button>
+
+        <div class="status-msg" id="status-msg"></div>
+    </div>
+
+    <!-- Firebase SDK Modulok -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Konfiguráció
+        const firebaseConfig = {
+            apiKey: "AIzaSyCX343Oi-c6JKJ0HVdhZihaNxtpiXdB5Sk",
+            authDomain: "gridapexoffical.firebaseapp.com",
+            projectId: "gridapexoffical",
+            storageBucket: "gridapexoffical.firebasestorage.app",
+            messagingSenderId: "932186345951",
+            appId: "1:932186345951:web:e8d6d78ad6f275935bf46a",
+            measurementId: "G-B318MBBYFM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        const statusMsg = document.getElementById('status-msg');
+
+        function showStatus(text, isError = false) {
+            statusMsg.innerText = text;
+            statusMsg.className = "status-msg " + (isError ? "status-error" : "status-success");
+        }
+
+        // Munkamenet figyelő: Ha a felhasználó már be van jelentkezve, egyből irányítsa át a Dashboardra
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                showStatus("Sikeres belépés! Átirányítás...");
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 500);
+            }
+        });
+
+        // 1. Email/Jelszó Belépés
+        document.getElementById('btn-login').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showStatus("Minden mező kitöltése kötelező!", true);
+                return;
+            }
+
+            signInWithEmailAndPassword(auth, email, password)
+                .catch(err => showStatus("Hiba a belépéskor: " + err.message, true));
+        });
+
+        // 2. Email/Jelszó Regisztráció
+        document.getElementById('btn-register').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showStatus("Minden mező kitöltése kötelező!", true);
+                return;
+            }
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .catch(err => showStatus("Hiba a regisztrációnál: " + err.message, true));
+        });
+
+        // 3. Google Bejelentkezés
+        document.getElementById('btn-google').addEventListener('click', () => {
+            signInWithPopup(auth, googleProvider)
+                .catch(err => showStatus("Google bejelentkezési hiba: " + err.message, true));
+        });
+    </script>
+</body>
+                  </html>
