@@ -117,14 +117,7 @@
             background: var(--red-accent);
             color: white;
             box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
-            margin-top: 10px;
-        }
-
-        .btn-register {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--subtext-color);
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         /* Elválasztó vonal */
@@ -159,6 +152,24 @@
             font-weight: 700;
         }
 
+        /* Regisztrációs átirányítás link */
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: var(--subtext-color);
+        }
+
+        .register-link a {
+            color: var(--green-accent);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
         /* Hiba / Státusz üzenetek */
         .status-msg {
             font-size: 0.8rem;
@@ -175,7 +186,7 @@
     <div class="login-card">
         <div class="brand-header">
             <div class="brand-title">GRID<span>APEX</span></div>
-            <div class="brand-subtitle">Telemetria & Csapat Portál</div>
+            <div class="brand-subtitle">Bejelentkezés</div>
         </div>
 
         <!-- Email & Jelszó Bejelentkezés -->
@@ -190,7 +201,6 @@
         </div>
 
         <button class="btn btn-primary" id="btn-login">Belépés</button>
-        <button class="btn btn-register" id="btn-register">Regisztráció</button>
 
         <div class="divider"><span>vagy</span></div>
 
@@ -205,6 +215,11 @@
             Belépés Google-fiókkal
         </button>
 
+        <!-- Átirányítás regisztrációra -->
+        <div class="register-link">
+            Még nincs fiókod? <a href="register.html">Regisztráció</a>
+        </div>
+
         <div class="status-msg" id="status-msg"></div>
     </div>
 
@@ -214,13 +229,16 @@
         import { 
             getAuth, 
             signInWithEmailAndPassword, 
-            createUserWithEmailAndPassword, 
             GoogleAuthProvider, 
-            signInWithPopup, 
-            onAuthStateChanged 
+            signInWithPopup 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Konfiguráció
+        // Firebase Konfiguráció
         const firebaseConfig = {
             apiKey: "AIzaSyCX343Oi-c6JKJ0HVdhZihaNxtpiXdB5Sk",
             authDomain: "gridapexoffical.firebaseapp.com",
@@ -233,6 +251,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
         const statusMsg = document.getElementById('status-msg');
@@ -242,49 +261,59 @@
             statusMsg.className = "status-msg " + (isError ? "status-error" : "status-success");
         }
 
-        // Munkamenet figyelő: Ha a felhasználó már be van jelentkezve, egyből irányítsa át a Dashboardra
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                showStatus("Sikeres belépés! Átirányítás...");
-                setTimeout(() => {
-                    window.location.href = "dashboard.html";
-                }, 500);
-            }
-        });
+        // Ellenőrzés: Megvannak-e a fiók adatai a Firestore-ban?
+        async function checkUserDataAndRedirect(user) {
+            try {
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
 
-        // 1. Email/Jelszó Belépés
-        document.getElementById('btn-login').addEventListener('click', () => {
-            const email = document.getElementById('email').value;
+                if (userDocSnap.exists() && userDocSnap.data().username) {
+                    // Ha az adatok teljesek -> Dashboard
+                    showStatus("Sikeres belépés! Átirányítás...");
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 600);
+                } else {
+                    // Ha hiányoznak az adatok (pl. Google belépésnél először) -> More.html
+                    showStatus("Hiányzó adatok kitöltése szükséges...");
+                    setTimeout(() => {
+                        window.location.href = "more.html";
+                    }, 600);
+                }
+            } catch (err) {
+                showStatus("Hiba az adatok ellenőrzésekor: " + err.message, true);
+            }
+        }
+
+        // 1. Email / Jelszó Bejelentkezés
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
             if (!email || !password) {
-                showStatus("Minden mező kitöltése kötelező!", true);
+                showStatus("Kérjük, adja meg az email-címet és a jelszót!", true);
                 return;
             }
 
-            signInWithEmailAndPassword(auth, email, password)
-                .catch(err => showStatus("Hiba a belépéskor: " + err.message, true));
-        });
-
-        // 2. Email/Jelszó Regisztráció
-        document.getElementById('btn-register').addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) {
-                showStatus("Minden mező kitöltése kötelező!", true);
-                return;
+            try {
+                showStatus("Bejelentkezés...");
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                await checkUserDataAndRedirect(userCredential.user);
+            } catch (err) {
+                showStatus("Hiba: Hibás email vagy jelszó!", true);
             }
-
-            createUserWithEmailAndPassword(auth, email, password)
-                .catch(err => showStatus("Hiba a regisztrációnál: " + err.message, true));
         });
 
-        // 3. Google Bejelentkezés
-        document.getElementById('btn-google').addEventListener('click', () => {
-            signInWithPopup(auth, googleProvider)
-                .catch(err => showStatus("Google bejelentkezési hiba: " + err.message, true));
+        // 2. Google Bejelentkezés
+        document.getElementById('btn-google').addEventListener('click', async () => {
+            try {
+                showStatus("Google kapcsolódás...");
+                const result = await signInWithPopup(auth, googleProvider);
+                await checkUserDataAndRedirect(result.user);
+            } catch (err) {
+                showStatus("Google bejelentkezési hiba: " + err.message, true);
+            }
         });
     </script>
 </body>
-                  </html>
+</html>
