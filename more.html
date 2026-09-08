@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridApex - Profil Kiegészítése</title>
+    <style>
+        :root {
+            --bg-color: #06080e;
+            --card-bg: #101420;
+            --red-accent: #ff0055;
+            --green-accent: #00ff66;
+            --text-color: #ffffff;
+            --subtext-color: #8b9bb4;
+            --border-color: #1e2638;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .more-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--green-accent);
+            border-radius: 12px;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .brand-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .brand-title span { color: var(--red-accent); }
+
+        .brand-subtitle {
+            font-size: 0.8rem;
+            color: var(--subtext-color);
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--subtext-color);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            background: #06080e;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--green-accent);
+        }
+
+        .form-control:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.1s, opacity 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-success {
+            background: var(--green-accent);
+            color: #000000;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.25);
+        }
+
+        .status-msg {
+            font-size: 0.8rem;
+            margin-top: 15px;
+            text-align: center;
+            min-height: 20px;
+        }
+        .status-error { color: var(--red-accent); }
+        .status-success { color: var(--green-accent); }
+    </style>
+</head>
+<body>
+
+    <div class="more-card">
+        <div class="brand-header">
+            <div class="brand-title">GRID<span>APEX</span></div>
+            <div class="brand-subtitle">Profil Adatok Kiegészítése</div>
+        </div>
+
+        <!-- Automatikusan kitöltött email mező (nem módosítható) -->
+        <div class="form-group">
+            <label>Email cím</label>
+            <input type="email" id="email" class="form-control" disabled placeholder="Betöltés...">
+        </div>
+
+        <div class="form-group">
+            <label>Teljes név</label>
+            <input type="text" id="fullName" class="form-control" placeholder="Kovács Péter">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Felhasználónév</label>
+                <input type="text" id="username" class="form-control" placeholder="SpeedKing">
+            </div>
+            <div class="form-group">
+                <label>Életkor</label>
+                <input type="number" id="age" class="form-control" placeholder="24" min="10" max="99">
+            </div>
+        </div>
+
+        <button class="btn btn-success" id="btn-save">Mentés és Tovább</button>
+
+        <div class="status-msg" id="status-msg"></div>
+    </div>
+
+    <!-- Firebase SDK Modulok -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            getDoc 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Konfiguráció
+        const firebaseConfig = {
+            apiKey: "AIzaSyCX343Oi-c6JKJ0HVdhZihaNxtpiXdB5Sk",
+            authDomain: "gridapexoffical.firebaseapp.com",
+            projectId: "gridapexoffical",
+            storageBucket: "gridapexoffical.firebasestorage.app",
+            messagingSenderId: "932186345951",
+            appId: "1:932186345951:web:e8d6d78ad6f275935bf46a",
+            measurementId: "G-B318MBBYFM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const statusMsg = document.getElementById('status-msg');
+        let currentUser = null;
+
+        function showStatus(text, isError = false) {
+            statusMsg.innerText = text;
+            statusMsg.className = "status-msg " + (isError ? "status-error" : "status-success");
+        }
+
+        // Munkamenet ellenőrzése
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('email').value = user.email || "";
+
+                // Ha van a Google fiókban név, előre kitöltjük a Teljes név mezőt
+                if (user.displayName) {
+                    document.getElementById('fullName').value = user.displayName;
+                }
+
+                // Ellenőrizzük, nincsenek-e már elmentve az adatok
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists() && userDocSnap.data().username) {
+                    // Ha az adatok már hiánytalanok, átirányítunk a Dashboardra
+                    window.location.href = "dashboard.html";
+                }
+            } else {
+                // Ha nincs bejelentkezve senki -> Login oldal
+                window.location.href = "login.html";
+            }
+        });
+
+        // Mentés gomb eseménykezelője
+        document.getElementById('btn-save').addEventListener('click', async () => {
+            if (!currentUser) return;
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const age = document.getElementById('age').value.trim();
+
+            if (!fullName || !username || !age) {
+                showStatus("Minden mező kitöltése kötelező!", true);
+                return;
+            }
+
+            try {
+                showStatus("Adatok mentése...");
+
+                // Adatok elmentése / frissítése Firestore-ban
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    email: currentUser.email,
+                    fullName: fullName,
+                    username: username,
+                    age: Number(age),
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+
+                showStatus("Sikeres mentés! Átirányítás...");
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 800);
+
+            } catch (err) {
+                showStatus("Hiba a mentés során: " + err.message, true);
+            }
+        });
+    </script>
+</body>
+  </html>
