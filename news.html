@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridApex - Hivatalos Hírek</title>
+    <style>
+        :root {
+            --bg-color: #06080e;
+            --card-bg: #101420;
+            --red-accent: #ff0055;
+            --green-accent: #00ff66;
+            --blue-accent: #00bfff;
+            --text-color: #ffffff;
+            --subtext-color: #8b9bb4;
+            --border-color: #1e2638;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+        .brand-title span { color: var(--red-accent); }
+
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+        .btn-back:hover { border-color: var(--green-accent); color: var(--green-accent); }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--subtext-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .admin-only-card {
+            border-top: 3px solid var(--red-accent);
+            display: none; /* Alapértelmezetten rejtett, csak adminnak jelenik meg */
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--subtext-color);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            background: #06080e;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-control:focus { border-color: var(--red-accent); }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: var(--red-accent);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .news-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .news-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--red-accent);
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .news-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .news-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--red-accent);
+        }
+
+        .news-author-info {
+            flex: 1;
+        }
+
+        .news-author-name {
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+
+        .news-meta {
+            font-size: 0.75rem;
+            color: var(--subtext-color);
+        }
+
+        .badge-admin {
+            background: rgba(255, 0, 85, 0.2);
+            color: var(--red-accent);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            border: 1px solid var(--red-accent);
+        }
+
+        .news-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .news-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+        }
+
+        .btn-delete {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 0, 85, 0.15);
+            color: var(--red-accent);
+            border: 1px solid var(--red-accent);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: var(--red-accent);
+            color: #fff;
+        }
+
+        .status-msg {
+            font-size: 0.8rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .status-error { color: var(--red-accent); }
+        .status-success { color: var(--green-accent); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Fejléc -->
+        <div class="top-bar">
+            <div class="brand-title">GRID<span>APEX</span> HÍREK</div>
+            <a href="dashboard.html" class="btn-back">← Vissza a Dashboardra</a>
+        </div>
+
+        <!-- Új Hivatalos Hír Létrehozása (Csak Adminoknak / sgerozje-nak) -->
+        <div class="card admin-only-card" id="admin-editor-card">
+            <div class="card-title">Új Hivatalos Bejegyzés Írása (Admin)</div>
+            
+            <div class="form-group">
+                <label>Hír Címe</label>
+                <input type="text" id="news-title-input" class="form-control" placeholder="pl. Hivatalos Bajnokság Frissítés">
+            </div>
+
+            <div class="form-group">
+                <label>Bejegyzés Tartalma</label>
+                <textarea id="news-content-input" class="form-control" placeholder="Írd ide a hivatalos bejelentést..."></textarea>
+            </div>
+
+            <button class="btn-submit" id="btn-publish-news">Hír Közzététele</button>
+            <div class="status-msg" id="status-msg"></div>
+        </div>
+
+        <!-- Hírek Lista -->
+        <div class="card-title">Hivatalos Bejelentések & Hírek</div>
+        <div class="news-container" id="news-list">
+            <div style="text-align: center; color: var(--subtext-color);">Hírek betöltése...</div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modulok -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDoc, 
+            getDocs, 
+            deleteDoc, 
+            doc, 
+            query, 
+            orderBy 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCX343Oi-c6JKJ0HVdhZihaNxtpiXdB5Sk",
+            authDomain: "gridapexoffical.firebaseapp.com",
+            projectId: "gridapexoffical",
+            storageBucket: "gridapexoffical.firebasestorage.app",
+            messagingSenderId: "932186345951",
+            appId: "1:932186345951:web:e8d6d78ad6f275935bf46a",
+            measurementId: "G-B318MBBYFM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let currentUserData = null;
+        let isAdminUser = false;
+
+        const statusMsg = document.getElementById('status-msg');
+
+        function showStatus(text, isError = false) {
+            statusMsg.innerText = text;
+            statusMsg.className = "status-msg " + (isError ? "status-error" : "status-success");
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const userDocSnap = await getDoc(doc(db, "users", user.uid));
+                
+                if (userDocSnap.exists()) {
+                    currentUserData = userDocSnap.data();
+                } else {
+                    currentUserData = {
+                        fullName: user.displayName || "Ismeretlen",
+                        username: user.email.split('@')[0],
+                        rank: "Kezdő Pilóta"
+                    };
+                }
+
+                // Admin vagy sgerozje ellenőrzése
+                const isAdmin = currentUserData?.rank === "Admin";
+                const isSgerozje = currentUserData?.username === "sgerozje";
+                isAdminUser = isAdmin || isSgerozje;
+
+                // Ha Admin vagy sgerozje, megjelenítjük az író felületet
+                if (isAdminUser) {
+                    document.getElementById('admin-editor-card').style.display = "block";
+                }
+
+                loadNews();
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Hír közzététele (Csak Admin / sgerozje)
+        document.getElementById('btn-publish-news').addEventListener('click', async () => {
+            if (!isAdminUser) {
+                showStatus("Nincs jogosultságod híreket közzétenni!", true);
+                return;
+            }
+
+            const title = document.getElementById('news-title-input').value.trim();
+            const content = document.getElementById('news-content-input').value.trim();
+
+            if (!title || !content) {
+                showStatus("A cím és a tartalom kitöltése kötelező!", true);
+                return;
+            }
+
+            try {
+                showStatus("Hír közzététele...");
+                
+                await addDoc(collection(db, "news"), {
+                    title: title,
+                    content: content,
+                    authorUid: currentUser.uid,
+                    authorName: currentUserData.fullName || "Adminisztrátor",
+                    authorUsername: currentUserData.username || "admin",
+                    authorRank: currentUserData.rank || "Admin",
+                    authorPhoto: currentUserData.photoURL || "https://via.placeholder.com/150/101420/ffffff?text=GRID",
+                    createdAt: new Date().toISOString()
+                });
+
+                document.getElementById('news-title-input').value = "";
+                document.getElementById('news-content-input').value = "";
+                
+                showStatus("Hír sikeresen közzétéve!");
+                loadNews();
+            } catch (err) {
+                showStatus("Hiba a hír közzétételekor: " + err.message, true);
+            }
+        });
+
+        // Hírek betöltése
+        async function loadNews() {
+            const newsList = document.getElementById('news-list');
+            
+            try {
+                const q = query(collection(db, "news"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+
+                newsList.innerHTML = "";
+
+                if (querySnapshot.empty) {
+                    newsList.innerHTML = `<div style="text-align: center; color: var(--subtext-color);">Még nincsenek hivatalos hírek.</div>`;
+                    return;
+                }
+
+                querySnapshot.forEach((newsDoc) => {
+                    const news = newsDoc.data();
+                    const newsId = newsDoc.id;
+
+                    const dateStr = new Date(news.createdAt).toLocaleString('hu-HU');
+
+                    const newsElement = document.createElement('div');
+                    newsElement.className = 'news-card';
+                    newsElement.innerHTML = `
+                        ${isAdminUser ? `<button class="btn-delete" data-id="${newsId}">Törlés</button>` : ''}
+                        <div class="news-header">
+                            <img class="news-avatar" src="${news.authorPhoto}" alt="Avatar">
+                            <div class="news-author-info">
+                                <div class="news-author-name">
+                                    ${news.authorName} (@${news.authorUsername})
+                                    <span class="badge-admin">${news.authorRank}</span>
+                                </div>
+                                <div class="news-meta">${dateStr}</div>
+                            </div>
+                        </div>
+                        <div class="news-title">${news.title}</div>
+                        <div class="news-content">${news.content}</div>
+                    `;
+
+                    newsList.appendChild(newsElement);
+                });
+
+                // Törlés gombok eseménykezelői
+                document.querySelectorAll('.btn-delete').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        if (confirm("Biztosan törölni szeretnéd ezt a hivatalos hírt?")) {
+                            try {
+                                await deleteDoc(doc(db, "news", id));
+                                loadNews();
+                            } catch (err) {
+                                alert("Hiba a törléskor: " + err.message);
+                            }
+                        }
+                    });
+                });
+
+            } catch (err) {
+                newsList.innerHTML = `<div style="text-align: center; color: var(--red-accent);">Hiba a hírek betöltésekor: ${err.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
