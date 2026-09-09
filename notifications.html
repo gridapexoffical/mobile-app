@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridApex - Értesítések</title>
+    <style>
+        :root {
+            --bg-color: #06080e;
+            --card-bg: #101420;
+            --red-accent: #ff0055;
+            --green-accent: #00ff66;
+            --blue-accent: #00bfff;
+            --subtext-color: #8b9bb4;
+            --border-color: #1e2638;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .brand-title span { color: var(--red-accent); }
+
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+        .btn-back:hover { border-color: var(--green-accent); color: var(--green-accent); }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--subtext-color);
+        }
+
+        .btn-mark-all {
+            background: rgba(0, 255, 102, 0.15);
+            color: var(--green-accent);
+            border: 1px solid var(--green-accent);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-mark-all:hover {
+            background: var(--green-accent);
+            color: #000;
+        }
+
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Értesítés Kártya Stílusok */
+        .notif-card {
+            background: #06080e;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--subtext-color);
+            border-radius: 8px;
+            padding: 16px;
+            position: relative;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        /* Olvasatlan értesítés kiemelése */
+        .notif-card.unread {
+            border-left-color: var(--green-accent);
+            background: rgba(0, 255, 102, 0.03);
+        }
+
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .notif-title-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .unread-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green-accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--green-accent);
+            display: inline-block;
+        }
+
+        .notif-title {
+            font-weight: 800;
+            font-size: 1rem;
+            color: #ffffff;
+        }
+
+        .notif-time {
+            font-size: 0.75rem;
+            color: var(--subtext-color);
+        }
+
+        .notif-body {
+            font-size: 0.88rem;
+            line-height: 1.4;
+            color: #d1d5db;
+            margin-bottom: 12px;
+        }
+
+        .notif-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-notif-action {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--subtext-color);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-notif-action:hover {
+            border-color: var(--blue-accent);
+            color: var(--blue-accent);
+        }
+
+        .btn-notif-delete {
+            border-color: rgba(255, 0, 85, 0.4);
+            color: var(--red-accent);
+        }
+
+        .btn-notif-delete:hover {
+            background: var(--red-accent);
+            color: #ffffff;
+        }
+
+        .status-msg {
+            text-align: center;
+            color: var(--subtext-color);
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Fejléc -->
+        <div class="top-bar">
+            <div class="brand-title">GRID<span>APEX</span> ÉRTESÍTÉSEK</div>
+            <a href="dashboard.html" class="btn-back">← Vissza a Dashboardra</a>
+        </div>
+
+        <div class="card">
+            <div class="action-bar">
+                <div class="section-title">Beérkező Üzenetek</div>
+                <button class="btn-mark-all" id="btn-mark-all">Összes olvasottá tétele</button>
+            </div>
+
+            <div class="notifications-list" id="notif-container">
+                <div class="status-msg">Értesítések betöltése...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modulok -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            getDocs, 
+            updateDoc, 
+            deleteDoc, 
+            query, 
+            where, 
+            orderBy, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCX343Oi-c6JKJ0HVdhZihaNxtpiXdB5Sk",
+            authDomain: "gridapexoffical.firebaseapp.com",
+            projectId: "gridapexoffical",
+            storageBucket: "gridapexoffical.firebasestorage.app",
+            messagingSenderId: "932186345951",
+            appId: "1:932186345951:web:e8d6d78ad6f275935bf46a",
+            measurementId: "G-B318MBBYFM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let isFirstLoad = true;
+
+        // Service Worker regisztrálása a háttérben futó Push értesítésekhez
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker regisztrálva:', reg.scope))
+                .catch(err => console.error('Service Worker hiba:', err));
+        }
+
+        // Push értesítés kiváltása az eszközön
+        function triggerPushNotification(title, body) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, {
+                        body: body,
+                        icon: 'https://via.placeholder.com/192/101420/00ff66?text=GRID',
+                        badge: 'https://via.placeholder.com/72/101420/ff0055?text=GA',
+                        vibrate: [100, 50, 100]
+                    });
+                });
+            }
+        }
+
+        // Munkamenet figyelése
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                listenToNotifications();
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Valós idejű értesítés hallgató (onSnapshot)
+        function listenToNotifications() {
+            const container = document.getElementById('notif-container');
+
+            // Felhasználó saját értesítéseinek lekérdezése időrendben
+            const q = query(
+                collection(db, "notifications"), 
+                where("userId", "==", currentUser.uid),
+                orderBy("createdAt", "desc")
+            );
+
+            onSnapshot(q, (snapshot) => {
+                if (snapshot.empty) {
+                    container.innerHTML = `<div class="status-msg">Nincsenek értesítéseid.</div>`;
+                    return;
+                }
+
+                container.innerHTML = "";
+
+                snapshot.docChanges().forEach((change) => {
+                    // Ha új értesítés érkezett (és nem az első betöltéskor vagyunk)
+                    if (change.type === "added" && !isFirstLoad) {
+                        const newNotif = change.doc.data();
+                        triggerPushNotification(newNotif.title || "Új értesítés", newNotif.message || "");
+                    }
+                });
+
+                isFirstLoad = false;
+
+                snapshot.forEach((notifDoc) => {
+                    const data = notifDoc.data();
+                    const notifId = notifDoc.id;
+                    const isUnread = !data.read;
+                    const timeStr = new Date(data.createdAt).toLocaleString('hu-HU');
+
+                    const card = document.createElement('div');
+                    card.className = `notif-card ${isUnread ? 'unread' : ''}`;
+                    card.innerHTML = `
+                        <div class="notif-header">
+                            <div class="notif-title-group">
+                                ${isUnread ? '<span class="unread-dot"></span>' : ''}
+                                <span class="notif-title">${data.title || 'Értesítés'}</span>
+                            </div>
+                            <span class="notif-time">${timeStr}</span>
+                        </div>
+                        <div class="notif-body">${data.message || ''}</div>
+                        <div class="notif-actions">
+                            <button class="btn-notif-action btn-toggle-read" data-id="${notifId}" data-read="${data.read}">
+                                ${isUnread ? 'Megjelölés olvasottként' : 'Megjelölés olvasatlanként'}
+                            </button>
+                            <button class="btn-notif-action btn-notif-delete" data-id="${notifId}">Törlés</button>
+                        </div>
+                    `;
+
+                    container.appendChild(card);
+                });
+
+                // Eseménykezelők a gombokra
+                bindNotificationButtons();
+            }, (err) => {
+                container.innerHTML = `<div class="status-msg" style="color: var(--red-accent);">Hiba az értesítések betöltésekor: ${err.message}</div>`;
+            });
+        }
+
+        function bindNotificationButtons() {
+            // Olvasott / Olvasatlan váltás
+            document.querySelectorAll('.btn-toggle-read').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const notifId = e.target.getAttribute('data-id');
+                    const currentReadStatus = e.target.getAttribute('data-read') === 'true';
+
+                    try {
+                        await updateDoc(doc(db, "notifications", notifId), {
+                            read: !currentReadStatus
+                        });
+                    } catch (err) {
+                        alert("Hiba a frissítéskor: " + err.message);
+                    }
+                });
+            });
+
+            // Törlés
+            document.querySelectorAll('.btn-notif-delete').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const notifId = e.target.getAttribute('data-id');
+
+                    try {
+                        await deleteDoc(doc(db, "notifications", notifId));
+                    } catch (err) {
+                        alert("Hiba a törléskor: " + err.message);
+                    }
+                });
+            });
+        }
+
+        // Összes olvasottá tétele
+        document.getElementById('btn-mark-all').addEventListener('click', async () => {
+            if (!currentUser) return;
+
+            try {
+                const q = query(
+                    collection(db, "notifications"), 
+                    where("userId", "==", currentUser.uid),
+                    where("read", "==", false)
+                );
+                
+                const querySnapshot = await getDocs(q);
+                const updates = [];
+
+                querySnapshot.forEach((docSnap) => {
+                    updates.push(updateDoc(doc(db, "notifications", docSnap.id), { read: true }));
+                });
+
+                await Promise.all(updates);
+            } catch (err) {
+                alert("Hiba az összes olvasottá tételekor: " + err.message);
+            }
+        });
+    </script>
+</body>
+</html>
