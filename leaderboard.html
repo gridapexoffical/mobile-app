@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridApex - Csapat Ranglista</title>
+    <style>
+        :root {
+            --bg-color: #06080e;
+            --card-bg: #101420;
+            --red-accent: #ff0055;
+            --green-accent: #00ff66;
+            --blue-accent: #00bfff;
+            --gold-accent: #ffd700;
+            --silver-accent: #c0c0c0;
+            --bronze-accent: #cd7f32;
+            --text-color: #ffffff;
+            --subtext-color: #8b9bb4;
+            --border-color: #1e2638;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Fejléc */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .brand-title span { color: var(--red-accent); }
+
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+        .btn-back:hover { border-color: var(--green-accent); color: var(--green-accent); }
+
+        /* Kártyák */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-color);
+        }
+
+        .badge-live {
+            background: rgba(0, 255, 102, 0.15);
+            color: var(--green-accent);
+            border: 1px solid var(--green-accent);
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Leaderboard Lista */
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .team-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #06080e;
+            padding: 14px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--border-color);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .team-row:hover {
+            transform: translateX(3px);
+            border-color: var(--green-accent);
+        }
+
+        /* Dobogós helyezések kiemelése */
+        .team-row.rank-1 {
+            border-left-color: var(--gold-accent);
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.08), #06080e);
+        }
+        .team-row.rank-2 {
+            border-left-color: var(--silver-accent);
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.08), #06080e);
+        }
+        .team-row.rank-3 {
+            border-left-color: var(--bronze-accent);
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.08), #06080e);
+        }
+
+        .team-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .rank {
+            font-weight: 900;
+            font-size: 1.2rem;
+            width: 30px;
+            text-align: center;
+            color: var(--subtext-color);
+        }
+
+        .rank-1 .rank { color: var(--gold-accent); }
+        .rank-2 .rank { color: var(--silver-accent); }
+        .rank-3 .rank { color: var(--bronze-accent); }
+
+        .team-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .team-name {
+            font-weight: 800;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .team-subtext {
+            font-size: 0.75rem;
+            color: var(--subtext-color);
+        }
+
+        .team-points {
+            font-weight: 900;
+            color: var(--green-accent);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .status-msg {
+            text-align: center;
+            color: var(--subtext-color);
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Fejléc -->
+        <div class="top-bar">
+            <div class="brand-title">GRID<span>APEX</span> RANGLISTA</div>
+            <a href="dashboard.html" class="btn-back">← Vissza a Dashboardra</a>
+        </div>
+
+        <!-- Leaderboard Kártya -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Bajnokság Csapat Állása</div>
+                <div class="badge-live">ÉLŐ RANGLISTA</div>
+            </div>
+
+            <div class="leaderboard-list" id="leaderboard-container">
+                <div class="status-msg">Csapatok betöltése a Firestore-ból...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modulok -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs, 
+            query, 
+            orderBy 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Konfiguráció
+        const firebaseConfig = {
+            apiKey: "AIzaSyCX343Oi-c6JKJ0HVdhZihaNxtpiXdB5Sk",
+            authDomain: "gridapexoffical.firebaseapp.com",
+            projectId: "gridapexoffical",
+            storageBucket: "gridapexoffical.firebasestorage.app",
+            messagingSenderId: "932186345951",
+            appId: "1:932186345951:web:e8d6d78ad6f275935bf46a",
+            measurementId: "G-B318MBBYFM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Csapatok lekérése Firestore-ból
+        async function loadLeaderboard() {
+            const container = document.getElementById('leaderboard-container');
+
+            try {
+                // Csapatok rendezése 'points' szerint csökkenő sorrendben
+                const q = query(collection(db, "teams"), orderBy("points", "desc"));
+                const querySnapshot = await getDocs(q);
+
+                container.innerHTML = "";
+
+                if (querySnapshot.empty) {
+                    container.innerHTML = `<div class="status-msg">Még nincsenek csapateredmények az adatbázisban.</div>`;
+                    return;
+                }
+
+                let rankIndex = 1;
+
+                querySnapshot.forEach((docSnap) => {
+                    const team = docSnap.data();
+                    
+                    let rankClass = "";
+                    if (rankIndex === 1) rankClass = "rank-1";
+                    else if (rankIndex === 2) rankClass = "rank-2";
+                    else if (rankIndex === 3) rankClass = "rank-3";
+
+                    const row = document.createElement('div');
+                    row.className = `team-row ${rankClass}`;
+                    row.innerHTML = `
+                        <div class="team-info">
+                            <span class="rank">#${rankIndex}</span>
+                            <div class="team-details">
+                                <span class="team-name">${team.name || 'Ismeretlen Csapat'}</span>
+                                ${team.driverCount ? `<span class="team-subtext">${team.driverCount} Pilóta</span>` : ''}
+                            </div>
+                        </div>
+                        <span class="team-points">${team.points || 0} PTS</span>
+                    `;
+
+                    container.appendChild(row);
+                    rankIndex++;
+                });
+
+            } catch (err) {
+                container.innerHTML = `<div class="status-msg" style="color: var(--red-accent);">Hiba a ranglista betöltésekor: ${err.message}</div>`;
+            }
+        }
+
+        // Ranglista betöltése indításkor
+        loadLeaderboard();
+    </script>
+</body>
+</html>
