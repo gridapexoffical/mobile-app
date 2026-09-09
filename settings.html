@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridApex - Beállítások</title>
+    <style>
+        :root {
+            --bg-color: #06080e;
+            --card-bg: #101420;
+            --red-accent: #ff0055;
+            --green-accent: #00ff66;
+            --subtext-color: #8b9bb4;
+            --border-color: #1e2638;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .brand-title span { color: var(--red-accent); }
+
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+        .btn-back:hover { border-color: var(--green-accent); color: var(--green-accent); }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--subtext-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        /* Toggle Kapcsolók */
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #161b29;
+        }
+
+        .setting-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-right: 15px;
+        }
+
+        .setting-label {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .setting-desc {
+            font-size: 0.78rem;
+            color: var(--subtext-color);
+        }
+
+        /* iOS-style switch slider */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #1e2638;
+            transition: .3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #ffffff;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--green-accent);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+            background-color: #000000;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            background: var(--green-accent);
+            color: #000000;
+            border: none;
+            border-radius: 6px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 15px;
+        }
+
+        .btn-logout {
+            background: rgba(255, 0, 85, 0.15);
+            color: var(--red-accent);
+            border: 1px solid var(--red-accent);
+        }
+
+        .btn-logout:hover {
+            background: var(--red-accent);
+            color: #ffffff;
+        }
+
+        .status-msg {
+            font-size: 0.8rem;
+            margin-top: 12px;
+            text-align: center;
+        }
+        .status-error { color: var(--red-accent); }
+        .status-success { color: var(--green-accent); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="top-bar">
+            <div class="brand-title">GRID<span>APEX</span> BEÁLLÍTÁSOK</div>
+            <a href="dashboard.html" class="btn-back">← Vissza a Dashboardra</a>
+        </div>
+
+        <!-- Értesítési Beállítások Kártya -->
+        <div class="card">
+            <div class="card-title">Értesítések Kezelése</div>
+
+            <!-- Rendszer értesítés engedélyezése -->
+            <div class="setting-row">
+                <div class="setting-info">
+                    <span class="setting-label">Böngésző Értesítések</span>
+                    <span class="setting-desc" id="push-permission-status">Rendszerüzenetek engedélyezése az eszközön</span>
+                </div>
+                <button class="btn-action" id="btn-request-push" style="width: auto; padding: 8px 14px; margin-top: 0; font-size: 0.75rem;">Engedélyezés</button>
+            </div>
+
+            <!-- Milyen témákról kérünk értesítést -->
+            <div class="setting-row">
+                <div class="setting-info">
+                    <span class="setting-label">Hivatalos Hírek & Bejelentések</span>
+                    <span class="setting-desc">Értesítés az Adminisztrátor által közzétett hírekről</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notify-news" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-info">
+                    <span class="setting-label">Közösségi Blog Bejegyzések</span>
+                    <span class="setting-desc">Értesítés új pilóta posztokról a blogon</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notify-blog" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-info">
+                    <span class="setting-label">Ranglista Változások</span>
+                    <span class="setting-desc">Frissítések a csapatok pontszámairól és helyezéseiről</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notify-leaderboard">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <button class="btn-action" id="btn-save-settings">Beállítások Mentése</button>
+            <div class="status-msg" id="status-msg"></div>
+        </div>
+
+        <!-- Munkamenet Kezelés -->
+        <div class="card">
+            <div class="card-title">Fiók Munkamenet</div>
+            <button class="btn-action btn-logout" id="btn-logout">Kijelentkezés a Fiókból</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modulok -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            setDoc 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCX343Oi-c6JKJ0HVdhZihaNxtpiXdB5Sk",
+            authDomain: "gridapexoffical.firebaseapp.com",
+            projectId: "gridapexoffical",
+            storageBucket: "gridapexoffical.firebasestorage.app",
+            messagingSenderId: "932186345951",
+            appId: "1:932186345951:web:e8d6d78ad6f275935bf46a",
+            measurementId: "G-B318MBBYFM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        const statusMsg = document.getElementById('status-msg');
+
+        function showStatus(text, isError = false) {
+            statusMsg.innerText = text;
+            statusMsg.className = "status-msg " + (isError ? "status-error" : "status-success");
+        }
+
+        // Push értesítési státusz ellenőrzése
+        function checkPushStatus() {
+            const btn = document.getElementById('btn-request-push');
+            const desc = document.getElementById('push-permission-status');
+
+            if (!("Notification" in window)) {
+                desc.innerText = "Ez a böngésző nem támogatja az értesítéseket.";
+                btn.style.display = "none";
+                return;
+            }
+
+            if (Notification.permission === "granted") {
+                desc.innerText = "Értesítések engedélyezve ezen az eszközön.";
+                btn.innerText = "Engedélyezve";
+                btn.style.background = "#1e2638";
+                btn.style.color = "var(--green-accent)";
+                btn.disabled = true;
+            } else if (Notification.permission === "denied") {
+                desc.innerText = "Értesítések letiltva a böngésző beállításaiban.";
+                btn.innerText = "Letiltva";
+                btn.style.background = "rgba(255, 0, 85, 0.2)";
+                btn.style.color = "var(--red-accent)";
+                btn.disabled = true;
+            }
+        }
+
+        // Értesítési engedély kérése a böngészőtől
+        document.getElementById('btn-request-push').addEventListener('click', async () => {
+            if ("Notification" in window) {
+                const permission = await Notification.requestPermission();
+                checkPushStatus();
+            }
+        });
+
+        // Munkamenet és mentett preferenciák betöltése
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                checkPushStatus();
+
+                // Firestore beállítások kiolvasása
+                const userDocSnap = await getDoc(doc(db, "users", user.uid));
+                if (userDocSnap.exists()) {
+                    const prefs = userDocSnap.data().notifications || {};
+                    document.getElementById('notify-news').checked = prefs.news !== false;
+                    document.getElementById('notify-blog').checked = prefs.blog !== false;
+                    document.getElementById('notify-leaderboard').checked = prefs.leaderboard === true;
+                }
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Preferenciák mentése Firestore-ba
+        document.getElementById('btn-save-settings').addEventListener('click', async () => {
+            if (!currentUser) return;
+
+            const notificationPrefs = {
+                news: document.getElementById('notify-news').checked,
+                blog: document.getElementById('notify-blog').checked,
+                leaderboard: document.getElementById('notify-leaderboard').checked
+            };
+
+            try {
+                showStatus("Mentés...");
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    notifications: notificationPrefs
+                }, { merge: true });
+
+                showStatus("Beállítások sikeresen elmentve!");
+            } catch (err) {
+                showStatus("Hiba a mentés során: " + err.message, true);
+            }
+        });
+
+        // Kijelentkezés
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
+            });
+        });
+    </script>
+</body>
+  </html>
