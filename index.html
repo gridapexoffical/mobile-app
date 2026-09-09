@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GridApex - Interactive Dashboard</title>
+    <title>GridApex - Üdvözlünk</title>
     <style>
         :root {
             --bg-color: #06080e;
             --card-bg: #101420;
-            --card-hover: #161c2e;
             --red-accent: #ff0055;
             --green-accent: #00ff66;
             --text-color: #ffffff;
@@ -27,424 +26,106 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            padding: 15px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Fejléc */
-        header {
+            min-height: 100vh;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 15px 0;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--red-accent);
+            padding: 20px;
         }
 
-        .brand {
-            font-size: 1.5rem;
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .brand span { color: var(--red-accent); }
-
-        .user-status {
-            font-size: 0.8rem;
-            color: var(--green-accent);
-            font-weight: 700;
-        }
-
-        /* Dashboard Grid / Négyzetek */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        /* Egyedi Dashboard Kártyák */
-        .dash-card {
+        .welcome-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
+            border-top: 3px solid var(--red-accent);
             border-radius: 12px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 140px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
         }
 
-        .dash-card:hover {
-            background: var(--card-hover);
-            border-color: var(--green-accent);
-            transform: translateY(-2px);
-        }
-
-        .dash-card.full-width {
-            grid-column: span 2;
-        }
-
-        .dash-card.active {
-            border-color: var(--red-accent);
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);
-        }
-
-        .card-icon {
-            font-size: 1.5rem;
+        .brand-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
             margin-bottom: 8px;
         }
 
-        .card-title {
-            font-size: 0.95rem;
+        .brand-title span {
+            color: var(--red-accent);
+        }
+
+        .welcome-msg {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--subtext-color);
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 6px;
             font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            transition: transform 0.1s, opacity 0.2s, border-color 0.2s;
         }
 
-        .card-subtitle {
-            font-size: 0.75rem;
-            color: var(--subtext-color);
-            margin-top: 4px;
+        .btn:active {
+            transform: scale(0.98);
         }
 
-        .click-hint {
-            font-size: 0.65rem;
-            color: var(--green-accent);
-            text-transform: uppercase;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        /* Részletek Lenyíló Doboz (Modal / Expanded Content) */
-        .details-panel {
-            grid-column: span 2;
-            background: #0a0e17;
-            border: 1px solid var(--red-accent);
-            border-radius: 12px;
-            padding: 18px;
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .details-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 12px;
-        }
-
-        .details-title {
-            color: var(--red-accent);
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        .close-btn {
-            color: var(--subtext-color);
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        /* Tabella / Csapatok listája */
-        .team-list { display: flex; flex-direction: column; gap: 8px; }
-        .team-item {
-            display: flex;
-            justify-content: space-between;
-            background: var(--card-bg);
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-        }
-        .team-item b { color: var(--green-accent); }
-
-        /* Form Elemek */
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 6px 0;
-            background: #06080e;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: #fff;
-        }
-
-        button.action-btn {
-            width: 100%;
-            padding: 10px;
+        .btn-login {
             background: var(--red-accent);
-            color: #fff;
+            color: #ffffff;
             border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 8px;
-            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+        }
+
+        .btn-register {
+            background: transparent;
+            color: var(--green-accent);
+            border: 1px solid var(--green-accent);
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.1);
+        }
+
+        .btn-register:hover {
+            background: rgba(0, 255, 102, 0.1);
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="brand">GRID<span>APEX</span></div>
-        <div class="user-status" id="header-user-status">Vendég Mód</div>
-    </header>
+    <div class="welcome-card">
+        <div class="brand-title">GRID<span>APEX</span></div>
+        <div class="welcome-msg">Üdvözlünk!</div>
+        <p class="subtitle">Kérjük, jelentkezz be vagy regisztrálj a folytatáshoz.</p>
 
-    <!-- MAIN DASHBOARD GRID -->
-    <div class="dashboard-grid">
-
-        <!-- 1. ÜDVÖZLÜNK NÉGYZET -->
-        <div class="dash-card full-width" onclick="showPanel('welcome-panel')">
-            <div>
-                <div class="card-icon">⚡</div>
-                <div class="card-title" id="card-welcome-title">Üdvözlünk a GridApexben</div>
-                <div class="card-subtitle" id="card-welcome-sub">Kattints az üdvözlő üzenet megtekintéséhez...</div>
-            </div>
-            <div class="click-hint">Részletek megtekintése &rarr;</div>
+        <div class="btn-group">
+            <a href="login.html" class="btn btn-login">Bejelentkezés</a>
+            <a href="register.html" class="btn btn-register">Regisztráció</a>
         </div>
-
-        <!-- Lenyíló doboz: Üdvözlünk -->
-        <div class="details-panel" id="welcome-panel">
-            <div class="details-header">
-                <span class="details-title">Üdvözlő Üzenet</span>
-                <span class="close-btn" onclick="hidePanels()">&times;</span>
-            </div>
-            <div id="welcome-content-body">Töltés a Firestore-ból...</div>
-        </div>
-
-        <!-- 2. NAPI HÍREK NÉGYZET -->
-        <div class="dash-card" onclick="showPanel('news-panel')">
-            <div>
-                <div class="card-icon">📰</div>
-                <div class="card-title">Napi Hírek</div>
-                <div class="card-subtitle" id="card-news-sub">Friss fejlesztések</div>
-            </div>
-            <div class="click-hint">Olvasás &rarr;</div>
-        </div>
-
-        <!-- 3. CSAPAT ÁLLÁS NÉGYZET -->
-        <div class="dash-card" onclick="showPanel('teams-panel')">
-            <div>
-                <div class="card-icon">🏆</div>
-                <div class="card-title">Csapat Állás</div>
-                <div class="card-subtitle" id="card-teams-sub">Ranglista & Pontok</div>
-            </div>
-            <div class="click-hint">Tabella &rarr;</div>
-        </div>
-
-        <!-- Lenyíló doboz: Napi Hírek -->
-        <div class="details-panel" id="news-panel">
-            <div class="details-header">
-                <span class="details-title">Legfrissebb Hírek</span>
-                <span class="close-btn" onclick="hidePanels()">&times;</span>
-            </div>
-            <div id="news-content-body">Hírek betöltése...</div>
-        </div>
-
-        <!-- Lenyíló doboz: Csapatok Állása -->
-        <div class="details-panel" id="teams-panel">
-            <div class="details-header">
-                <span class="details-title">Bajnokság Állása</span>
-                <span class="close-btn" onclick="hidePanels()">&times;</span>
-            </div>
-            <div class="team-list" id="teams-content-body">Tabella betöltése...</div>
-        </div>
-
-        <!-- 4. BEJELENTKEZÉS NÉGYZET -->
-        <div class="dash-card full-width" onclick="showPanel('auth-panel')">
-            <div>
-                <div class="card-icon">🔑</div>
-                <div class="card-title" id="card-auth-title">Bejelentkezés / Fiók</div>
-                <div class="card-subtitle" id="card-auth-sub">Lépj be a telemetriai adatok eléréséhez</div>
-            </div>
-            <div class="click-hint" id="card-auth-hint">Fiók Kezelése &rarr;</div>
-        </div>
-
-        <!-- Lenyíló doboz: Bejelentkezés & Profil -->
-        <div class="details-panel" id="auth-panel">
-            <div class="details-header">
-                <span class="details-title" id="auth-panel-title">Fiók Bejelentkezés</span>
-                <span class="close-btn" onclick="hidePanels()">&times;</span>
-            </div>
-            
-            <!-- Ha Nincs Bejelentkezve -->
-            <div id="auth-form-container">
-                <input type="email" id="input-email" placeholder="Email cím">
-                <input type="password" id="input-password" placeholder="Jelszó">
-                <button class="action-btn" id="btn-login">Belépés</button>
-                <button class="action-btn" id="btn-register" style="background:#222b3d; margin-top:5px;">Regisztráció</button>
-            </div>
-
-            <!-- Ha Be van jelentkezve -->
-            <div id="auth-profile-container" style="display:none;">
-                <p style="margin-bottom: 10px; color: var(--subtext-color);">Sikeresen bejelentkezve:</p>
-                <p style="font-weight: bold; color: var(--green-accent); margin-bottom: 15px;" id="profile-email-text">-</p>
-                <button class="action-btn" id="btn-logout" style="background:#222b3d;">Kijelentkezés</button>
-            </div>
-        </div>
-
     </div>
 
-    <!-- FIREBASE & FIRESTORE MODUL -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCX343Oi-c6JKJ0HVdhZihaNxtpiXdB5Sk",
-            authDomain: "gridapexoffical.firebaseapp.com",
-            projectId: "gridapexoffical",
-            storageBucket: "gridapexoffical.firebasestorage.app",
-            messagingSenderId: "932186345951",
-            appId: "1:932186345951:web:e8d6d78ad6f275935bf46a",
-            measurementId: "G-B318MBBYFM"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // --- FIRESTORE ADATOK BETÖLTÉSE ---
-
-        // 1. Üdvözlő szöveg lekérése (Firestore: 'settings' collection -> 'welcome' doc)
-        async function loadWelcomeMessage() {
-            try {
-                const docRef = doc(db, "settings", "welcome");
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    document.getElementById('card-welcome-title').innerText = data.title || "Üdvözlünk a GridApexben";
-                    document.getElementById('welcome-content-body').innerHTML = `<p>${data.message || 'Nincs megjeleníthető üzenet.'}</p>`;
-                } else {
-                    document.getElementById('welcome-content-body').innerHTML = "<p>Üdvözlünk a GridApex hivatalos mobil felületén! Válassz a fenti menüpontok közül.</p>";
-                }
-            } catch (e) {
-                document.getElementById('welcome-content-body').innerHTML = "<p>Üdvözlünk a GridApex alkalmazásban!</p>";
-            }
-        }
-
-        // 2. Napi Hírek lekérése (Firestore: 'news' collection)
-        async function loadNews() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "news"));
-                let html = "";
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    html += `<div style="margin-bottom:12px; border-bottom:1px solid #1e2638; padding-bottom:8px;">
-                        <strong style="color:#ff0055;">${data.title || 'Hír'}</strong>
-                        <p style="font-size:0.85rem; color:#8b9bb4; margin-top:4px;">${data.content || ''}</p>
-                    </div>`;
-                });
-                document.getElementById('news-content-body').innerHTML = html || "<p>Jelenleg nincsenek új hírek.</p>";
-            } catch (e) {
-                document.getElementById('news-content-body').innerHTML = "<p>A híreket nem sikerült betölteni.</p>";
-            }
-        }
-
-        // 3. Csapatok állásának lekérése (Firestore: 'teams' collection)
-        async function loadTeams() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "teams"));
-                let html = "";
-                let count = 1;
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    html += `<div class="team-item">
-                        <span>#${count} ${data.name || 'Csapat'}</span>
-                        <b>${data.points || 0} PTS</b>
-                    </div>`;
-                    count++;
-                });
-                document.getElementById('teams-content-body').innerHTML = html || "<p>Nincsenek elérhető csapatadatok.</p>";
-            } catch (e) {
-                document.getElementById('teams-content-body').innerHTML = "<p>Nem sikerült betölteni a csapatokat.</p>";
-            }
-        }
-
-        // Adatok inicializálása
-        loadWelcomeMessage();
-        loadNews();
-        loadTeams();
-
-        // --- AUTHENTICATION MŰKÖDÉS ---
-        onAuthStateChanged(auth, (user) => {
-            const statusText = document.getElementById('header-user-status');
-            const authTitle = document.getElementById('card-auth-title');
-            const authSub = document.getElementById('card-auth-sub');
-            const authForm = document.getElementById('auth-form-container');
-            const authProfile = document.getElementById('auth-profile-container');
-            const profileEmail = document.getElementById('profile-email-text');
-
-            if (user) {
-                statusText.innerText = "Bejelentkezve";
-                authTitle.innerText = "Saját Fiók";
-                authSub.innerText = user.email;
-                authForm.style.display = "none";
-                authProfile.style.display = "block";
-                profileEmail.innerText = user.email;
-            } else {
-                statusText.innerText = "Vendég Mód";
-                authTitle.innerText = "Bejelentkezés / Fiók";
-                authSub.innerText = "Lépj be a telemetriai adatok eléréséhez";
-                authForm.style.display = "block";
-                authProfile.style.display = "none";
-            }
-        });
-
-        // Belépés Gomb
-        document.getElementById('btn-login').addEventListener('click', () => {
-            const email = document.getElementById('input-email').value;
-            const pass = document.getElementById('input-password').value;
-            signInWithEmailAndPassword(auth, email, pass).catch(err => alert("Hiba: " + err.message));
-        });
-
-        // Regisztráció Gomb
-        document.getElementById('btn-register').addEventListener('click', () => {
-            const email = document.getElementById('input-email').value;
-            const pass = document.getElementById('input-password').value;
-            createUserWithEmailAndPassword(auth, email, pass).catch(err => alert("Hiba: " + err.message));
-        });
-
-        // Kijelentkezés Gomb
-        document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
-    </script>
-
-    <!-- INTERAKTÍV PANEL NYITÁS / ZÁRÁS SCRIPT -->
-    <script>
-        function hidePanels() {
-            const panels = document.querySelectorAll('.details-panel');
-            const cards = document.querySelectorAll('.dash-card');
-            panels.forEach(p => p.style.display = 'none');
-            cards.forEach(c => c.classList.remove('active'));
-        }
-
-        function showPanel(panelId) {
-            const targetPanel = document.getElementById(panelId);
-            const isAlreadyOpen = targetPanel.style.display === 'block';
-
-            hidePanels();
-
-            if (!isAlreadyOpen) {
-                targetPanel.style.display = 'block';
-                // Animáció finomítása
-                targetPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }
-    </script>
 </body>
-          </html>
+</html>
