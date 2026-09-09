@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridApex - Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #06080e;
+            --card-bg: #101420;
+            --red-accent: #ff0055;
+            --green-accent: #00ff66;
+            --blue-accent: #00bfff;
+            --purple-accent: #a100ff;
+            --yellow-accent: #ffd700;
+            --text-color: #ffffff;
+            --subtext-color: #8b9bb4;
+            --border-color: #1e2638;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Fejléc */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .brand-title span { color: var(--red-accent); }
+
+        .user-greeting {
+            font-size: 0.9rem;
+            color: var(--subtext-color);
+            font-weight: 600;
+        }
+
+        /* Felső Kiemelt XP & Rang Kártya */
+        .header-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--green-accent);
+            border-radius: 12px;
+            padding: 20px 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0, 255, 102, 0.05);
+        }
+
+        .user-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-name-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .display-name {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .rank-badge {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--green-accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lvl-badge {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--green-accent);
+            text-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+        }
+
+        /* XP Progress Bar */
+        .xp-bar-container {
+            background: #06080e;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            height: 18px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .xp-bar-fill {
+            background: linear-gradient(90deg, var(--blue-accent), var(--green-accent));
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
+        }
+
+        .xp-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--subtext-color);
+            font-weight: 700;
+        }
+
+        /* Különböző Méretű Csempék (Grid / Bento Layout) */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .grid-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-decoration: none;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .grid-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-color, var(--blue-accent));
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Eltérő méretezések a kártyáknak */
+        .card-large {
+            grid-column: span 2;
+            min-height: 160px;
+        }
+
+        .card-medium {
+            grid-column: span 1;
+            min-height: 160px;
+        }
+
+        .card-full {
+            grid-column: span 3;
+            min-height: 120px;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: var(--subtext-color);
+            line-height: 1.3;
+        }
+
+        /* Egyedi kártya kiemelő színek */
+        .card-news { --accent-color: var(--red-accent); border-left: 4px solid var(--red-accent); }
+        .card-blog { --accent-color: var(--blue-accent); border-left: 4px solid var(--blue-accent); }
+        .card-xp { --accent-color: var(--green-accent); border-left: 4px solid var(--green-accent); }
+        .card-leaderboard { --accent-color: var(--yellow-accent); border-left: 4px solid var(--yellow-accent); }
+        .card-notifications { --accent-color: var(--purple-accent); border-left: 4px solid var(--purple-accent); }
+        .card-profile { --accent-color: #ffffff; border-left: 4px solid #ffffff; }
+        .card-settings { --accent-color: var(--subtext-color); border-left: 4px solid var(--subtext-color); }
+
+        /* Mobil nézet igazítás */
+        @media (max-width: 650px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .card-large, .card-medium, .card-full {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Fejléc -->
+        <div class="top-bar">
+            <div class="brand-title">GRID<span>APEX</span></div>
+            <div class="user-greeting" id="user-email-display">Betöltés...</div>
+        </div>
+
+        <!-- Felső Profil & XP Állapot Kártya -->
+        <div class="header-card">
+            <div class="user-info-row">
+                <div class="user-name-title">
+                    <span class="display-name" id="user-name">Pilóta</span>
+                    <span class="rank-badge" id="user-rank">Kezdő Pilóta</span>
+                </div>
+                <div class="lvl-badge" id="user-level">LVL 1</div>
+            </div>
+
+            <div class="xp-bar-container">
+                <div class="xp-bar-fill" id="xp-bar"></div>
+            </div>
+
+            <div class="xp-stats">
+                <span id="xp-current">0 XP</span>
+                <span id="xp-next">100 XP a következő szintig</span>
+            </div>
+        </div>
+
+        <!-- Modul Csempék (Különböző Méretű Négyszögek) -->
+        <div class="dashboard-grid">
+            
+            <!-- Hírek (Nagy Kártya) -->
+            <a href="news.html" class="grid-card card-large card-news">
+                <div class="card-icon">📰</div>
+                <div>
+                    <div class="card-title">Hivatalos Hírek</div>
+                    <div class="card-desc">Friss bajnoki bejelentések, szabályváltozások és hivatalos közlemények.</div>
+                </div>
+            </a>
+
+            <!-- XP & Szintek (Közepes Kártya) -->
+            <a href="xp.html" class="grid-card card-medium card-xp">
+                <div class="card-icon">⚡</div>
+                <div>
+                    <div class="card-title">XP & Mérföldkövek</div>
+                    <div class="card-desc">Kövesd nyomon a szintlépéseidet és feloldható rangjaidat.</div>
+                </div>
+            </a>
+
+            <!-- Közösségi Blog (Közepes Kártya) -->
+            <a href="blog.html" class="grid-card card-medium card-blog">
+                <div class="card-icon">💬</div>
+                <div>
+                    <div class="card-title">Közösségi Blog</div>
+                    <div class="card-desc">Oszd meg a gondolataidat és olvasd a többi pilóta posztjait.</div>
+                </div>
+            </a>
+
+            <!-- Csapat Ranglista (Nagy Kártya) -->
+            <a href="leaderboard.html" class="grid-card card-large card-leaderboard">
+                <div class="card-icon">🏆</div>
+                <div>
+                    <div class="card-title">Bajnokság Állása</div>
+                    <div class="card-desc">Élő csapateredmények és pontszámok a tabella élén.</div>
+                </div>
+            </a>
+
+            <!-- Értesítések (Közepes Kártya) -->
+            <a href="notifications.html" class="grid-card card-medium card-notifications">
+                <div class="card-icon">🔔</div>
+                <div>
+                    <div class="card-title">Értesítések</div>
+                    <div class="card-desc">Beérkező üzenetek és rendszerértesítések.</div>
+                </div>
+            </a>
+
+            <!-- Saját Profil (Közepes Kártya) -->
+            <a href="profile.html" class="grid-card card-medium card-profile">
+                <div class="card-icon">👤</div>
+                <div>
+                    <div class="card-title">Profilom</div>
+                    <div class="card-desc">Személyes adatok, profilkép és adatok szerkesztése.</div>
+                </div>
+            </a>
+
+            <!-- Beállítások (Széles Kártya) -->
+            <a href="settings.html" class="grid-card card-full card-settings">
+                <div class="card-icon">⚙️</div>
+                <div>
+                    <div class="card-title">Beállítások</div>
+                    <div class="card-desc">Értesítési preferenciák, téma beállítások és kijelentkezés.</div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modulok -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCX343Oi-c6JKJ0HVdhZihaNxtpiXdB5Sk",
+            authDomain: "gridapexoffical.firebaseapp.com",
+            projectId: "gridapexoffical",
+            storageBucket: "gridapexoffical.firebasestorage.app",
+            messagingSenderId: "932186345951",
+            appId: "1:932186345951:web:e8d6d78ad6f275935bf46a",
+            measurementId: "G-B318MBBYFM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Rangok és XP határok definíciója
+        const ranks = [
+            { level: 1, name: "Kezdő Pilóta", minXp: 0 },
+            { level: 2, name: "Amatőr Versenyző", minXp: 100 },
+            { level: 3, name: "Tapasztalt Pilóta", minXp: 300 },
+            { level: 4, name: "Profi Versenyző", minXp: 600 },
+            { level: 5, name: "Mester Pilóta", minXp: 1000 },
+            { level: 6, name: "GridApex Legenda", minXp: 2000 }
+        ];
+
+        // Munkamenet és adatok betöltése
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                document.getElementById('user-email-display').innerText = user.email;
+
+                // Firestore profiladatok kiolvasása
+                const userDocSnap = await getDoc(doc(db, "users", user.uid));
+                let xp = 0;
+                let username = user.displayName || user.email.split('@')[0];
+
+                if (userDocSnap.exists()) {
+                    const data = userDocSnap.data();
+                    xp = data.xp || 0;
+                    if (data.username) username = data.username;
+                }
+
+                document.getElementById('user-name').innerText = username;
+                updateXpHeader(xp);
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // XP és Rang adatok frissítése
+        function updateXpHeader(xp) {
+            let currentLevelObj = ranks[0];
+            let nextLevelObj = ranks[1];
+
+            for (let i = 0; i < ranks.length; i++) {
+                if (xp >= ranks[i].minXp) {
+                    currentLevelObj = ranks[i];
+                    nextLevelObj = ranks[i + 1] || null;
+                }
+            }
+
+            document.getElementById('user-level').innerText = `LVL ${currentLevelObj.level}`;
+            document.getElementById('user-rank').innerText = currentLevelObj.name;
+            document.getElementById('xp-current').innerText = `${xp} XP`;
+
+            if (nextLevelObj) {
+                const xpInCurrentLevel = xp - currentLevelObj.minXp;
+                const xpNeededForNextLevel = nextLevelObj.minXp - currentLevelObj.minXp;
+                const percentage = Math.min(100, Math.floor((xpInCurrentLevel / xpNeededForNextLevel) * 100));
+
+                document.getElementById('xp-bar').style.width = `${percentage}%`;
+                document.getElementById('xp-next').innerText = `${nextLevelObj.minXp - xp} XP a következő szintig`;
+            } else {
+                document.getElementById('xp-bar').style.width = `100%`;
+                document.getElementById('xp-next').innerText = `Max Szint Elérve!`;
+            }
+        }
+    </script>
+</body>
+</html>
