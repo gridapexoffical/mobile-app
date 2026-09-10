@@ -337,14 +337,13 @@
             }
         });
 
-        // 2. Google Regisztráció / Belépés
         document.getElementById('btn-google').addEventListener('click', async () => {
             try {
                 showStatus("Google hitelesítés...");
                 const result = await signInWithPopup(auth, googleProvider);
                 const user = result.user;
 
-                // Ellenőrizzük, létezik-e már az adatai a Firestore-ban
+                
                 const userDocRef = doc(db, "users", user.uid);
                 const userDocSnap = await getDoc(userDocRef);
 
